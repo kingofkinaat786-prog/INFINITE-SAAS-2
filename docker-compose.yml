@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: saas
+      POSTGRES_PASSWORD: saas_pass
+      POSTGRES_DB: saasdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+  app:
+    build: .
+    command: node server/index.js
+    environment:
+      DATABASE_URL: postgres://saas:saas_pass@postgres:5432/saasdb
+      NODE_ENV: development
+    ports:
+      - '3000:3000'
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
